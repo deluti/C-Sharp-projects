@@ -1,0 +1,106 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
+using System.Numerics;
+using System.Threading;
+using System.Runtime.InteropServices;
+
+namespace ConsoleApp3
+{
+    internal class Program
+    {
+        static string shadow_alph = ".:;=+xX$&@";  
+
+        static int ray_length = 60;
+
+        //screen
+
+        static int screen_width = 120;
+        static int screen_height = 30;
+        static public char[,] screen_objects = new char[screen_height, screen_width]; 
+
+        //light xyz
+
+        static int global_light_x = 60;
+        static int global_light_y = 0;
+        static int global_light_z = 30; 
+
+        //planet xyz
+
+        static int planet_x = screen_width / 2;
+        static int planet_y = screen_height / 2;
+        static int planet_z = 0;
+
+        static int planet_radius = 12;
+
+        static double planet_scale = 0.5; 
+
+        static int direction = 1;
+        static void Main(string[] args)
+        {
+            while (true)
+            { 
+                Thread.Sleep(100); 
+                global_light_x = Convert.ToInt32(Math.Sqrt(global_light_z * global_light_z - 
+                    global_light_y * global_light_y));
+                if (global_light_y >= 30)
+                {
+                    global_light_y = -30;
+                }
+                global_light_y += direction;
+                string exit = "";
+                char[] buffer = new char[screen_width * screen_height];
+                //Console.WriteLine($"{global_light_x} {global_light_y}");
+                for (int i = 0; i < screen_width; i++)
+                {
+                    for (int j = 0; j < screen_height; j++)
+                    {
+                        screen_objects[j, i] = ' ';
+                    }
+                }
+
+                for (int ray_x = 0; ray_x < screen_width; ray_x++) 
+                {
+                    for (int ray_y = 0; ray_y < screen_height; ray_y++)
+                    {
+                        for (int ray_z = global_light_z; ray_z > global_light_z-ray_length; ray_z--)
+                        { 
+                            int vector_x = Convert.ToInt32((ray_x - planet_x) * planet_scale);
+                            int vector_y = ray_y - planet_y;
+                            int vector_z = ray_z - planet_z;
+
+                            int distance = Convert.ToInt32(Math.Sqrt((vector_x * vector_x)
+                                + (vector_y * vector_y) + (vector_z * vector_z)));  
+                            if (distance <= planet_radius)
+                            {  
+                                int k = Convert.ToInt32(shadow_alph.Length * ((ray_x * global_light_x + ray_y * global_light_y + ray_z * global_light_z)
+                                    / (Math.Sqrt( ray_x * ray_x + ray_y * ray_y + ray_z * ray_z)
+                                    * Math.Sqrt(global_light_x * global_light_x +
+                                        global_light_y * global_light_y +
+                                        global_light_z * global_light_z))));
+                                if (k > 9) { k = 9; }
+                                else if (k < 0) { k = 0; }
+                                screen_objects[ray_y, ray_x] = shadow_alph[k];
+                                break;
+                            }
+                        }
+                    }
+                }  
+                int n = 0;
+                for (int i = 0; i < screen_height; i++)
+                {
+                    for (int j = 0; j < screen_width; j++)
+                    {
+                        buffer[n] = screen_objects[i, j];
+                        n += 1;
+                    }
+                }  
+                Console.Write(buffer);
+                
+            }
+        }
+    }
+}
