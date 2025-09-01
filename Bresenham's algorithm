@@ -1,1 +1,141 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Run_To_Point
+{
+    internal class Program
+    {
+        static List<List<int>> ints = new List<List<int>>();
+        static void Main(string[] args)
+        {
+            while (true)
+            {
+                Console.Write("Введите размер поля(x/y):");
+                string[] x_y = Console.ReadLine().Split('/');
+                for (int i = 0; i < Convert.ToInt32(x_y[0]); i++)
+                {
+                    ints.Add(new List<int>());
+                    for (int j = 0; j < Convert.ToInt32(x_y[1]); j++)
+                    {
+                        if (i == 0 || i == Convert.ToInt32(x_y[0]) - 1 || j == 0 || j == Convert.ToInt32(x_y[1]) - 1)
+                        {
+                            ints[i].Add(1);
+                        }
+                        else
+                        {
+                            ints[i].Add(0);
+                        }
+                    }
+                }
+                Random rnd = new Random();
+                int x_1 = rnd.Next(1, Convert.ToInt32(x_y[0]) - 1);
+                int y_1 = rnd.Next(1, Convert.ToInt32(x_y[1]) - 1);
+                int x_2 = x_1;
+                int y_2 = y_1;
+                while (x_2 == x_1 && y_2 == y_1)
+                {
+                    x_2 = rnd.Next(1, Convert.ToInt32(x_y[0]) - 1);
+                    y_2 = rnd.Next(1, Convert.ToInt32(x_y[1]) - 1);
+                }
+                ints[x_1][y_1] = 2;
+                ints[x_2][y_2] = 3;
+
+                int a = y_2 - y_1;
+                int b = x_1 - x_2;
+                int a1, b1;
+                if (a < 0) { a1 = -1; } else { a1 = 1; }
+                if (b < 0) { b1 = -1; } else { b1 = 1; }
+
+                int f = 0;
+
+                int x, y;
+
+                x = x_1;
+                y = y_1;
+
+                if (Math.Abs(a) < Math.Abs(b))
+                {
+                    while (true)
+                    {
+                        f = f + a * a1;
+                        if ( f > 0 )
+                        {
+                            f = f - b * b1;
+                            y = y + a1;
+                        }
+                        x = x - b1;
+                        if (x == x_2 && y_2 == y)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            ints[x][y] = 4;
+                        }
+                    }
+                }
+                else
+                {
+                    while (true)
+                    {
+                        f = f + b * b1;
+                        if (f > 0)
+                        {
+                            f = f - a * a1;
+                            x = x - b1;
+                        }
+                        y = y + a1;
+                        if (x == x_2 && y_2 == y)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            ints[x][y] = 4;
+                        }
+                    } 
+                }
+
+                for (int i = 0; i < Convert.ToInt32(x_y[0]); i++)
+                {
+                    for (int j = 0; j < Convert.ToInt32(x_y[1]); j++)
+                    {
+                        switch (Convert.ToInt32(ints[i][j]))
+                        {
+                            case 0:
+                                Console.BackgroundColor = ConsoleColor.Black;
+                                Console.Write("  ");
+                                break;
+                            case 1:
+                                Console.BackgroundColor = ConsoleColor.White;
+                                Console.Write("  ");
+                                break;
+                            case 2:
+                                Console.BackgroundColor = ConsoleColor.Blue;
+                                Console.Write("  ");
+                                break;
+                            case 3:
+                                Console.BackgroundColor = ConsoleColor.Red;
+                                Console.Write("  ");
+                                break;
+                            case 4:
+                                Console.BackgroundColor = ConsoleColor.Yellow;
+                                Console.Write("  ");
+                                break;
+                        }
+                    }
+                    Console.WriteLine();
+                }
+                Console.BackgroundColor = ConsoleColor.Black; 
+                Console.ReadLine();
+                ints.Clear();
+                Console.Clear();
+            }
+        }
+    }
+} 
 
